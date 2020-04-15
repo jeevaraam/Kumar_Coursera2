@@ -24,18 +24,47 @@
 include sources.mk
 
 # Platform Overrides
-PLATFORM = 
+PLATFORM = $(PLATFORM)
+
+FLAGS = -Wall -Werror -g -O0 -std=c99 
 
 # Architectures Specific Flags
-LINKER_FILE = 
-CPU = 
-ARCH = 
-SPECS = 
+
+LINKER_FILE = ../msp432p401r.lds
+CPU = cortex-m4
+ARCH = thumb
+SPECS = nosys.specs
+
+TARGET = c1m2
+CPPFLAGS = -D$(PLATFORM)
 
 # Compiler Flags and Defines
-CC = 
-LD = 
-LDFLAGS = 
-CFLAGS = 
-CPPFLAGs = 
+ifeq($(PLATFORM),MSP432)
+	CC = arm-none-eabi-gcc
+	LD = arm-none-eabi-ld
+	LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
+	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mfpu=fpv4-sp-d16 --specs=$(SPECS) $(FLAGS)
+else
+	CC = gcc
+	LD = ld
+	LDFLAGS = -Wl,-Map=$(TARGET).map
+	CFLAGS = $(FLAGS)	
+endif
 
+OBJS = $(SRCS:.c=.o)
+
+%.o : %.c
+	$(CC) -c $< $(CFLAGS) -o $@
+
+.PHONY: build
+build: all
+
+.PHONY: all
+all: $(TARGET).out
+
+$(TARGET).out: $(OBJS)
+	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) $(TARGET).out $(TARGET).map
