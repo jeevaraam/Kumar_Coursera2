@@ -10,7 +10,8 @@
 #*****************************************************************************
 
 # Add your Source files to this variable
-SOURCES = main.c memory.c
+SOURCES =
 
 # Add your include paths to this variable
-INCLUDES = ../src/common/
+INCLUDES = 
+
