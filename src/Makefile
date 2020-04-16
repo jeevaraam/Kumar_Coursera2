@@ -54,12 +54,14 @@ ifeq ($(PLATFORM),MSP432)
 	LD = arm-none-eabi-ld
 	LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
 	CFLAGS = $(CPPFLAGS) -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mfpu=fpv4-sp-d16 --specs=$(SPECS) $(FLAGS)
+	DMP = arm-none-eabi-objdump -d
 else
 	#FLAGS for HOST
 	CC = gcc
 	LD = ld
 	LDFLAGS = -Wl,-Map=$(TARGET).map
-	CFLAGS = $(CPPFLAGS) $(FLAGS)	
+	CFLAGS = $(CPPFLAGS) $(FLAGS)
+	DMP = objdump -d
 endif
 
 #Flies collection for .o Files
@@ -94,7 +96,8 @@ build: $(DEBS) $(TARGET).out
 
 $(TARGET).out:$(OBJS) 
 	$(CC) $(INCLUDES) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
-	size $(TARGET).out
+	$(DMP) $(TARGET).out
+	size $(TARGET).out 
 	
 #Cleans the compiler generated files in the folder
 .PHONY: clean
