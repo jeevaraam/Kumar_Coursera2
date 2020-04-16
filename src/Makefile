@@ -94,7 +94,8 @@ build: $(DEBS) $(TARGET).out
 
 $(TARGET).out:$(OBJS) 
 	$(CC) $(INCLUDES) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
-
+	size $(TARGET).out
+	
 #Cleans the compiler generated files in the folder
 .PHONY: clean
 clean:
